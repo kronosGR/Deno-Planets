@@ -2,8 +2,10 @@ import { join } from 'https://deno.land/std/path/mod.ts';
 import { BufReader } from 'https://deno.land/std/io/mod.ts';
 import { parse } from 'https://deno.land/std/encoding/csv.ts';
 
+import * as _ from 'https://raw.githubusercontent.com/lodash/lodash/es/lodash.js';
+
 interface Planet {
-  [key: string] : string
+  [key: string]: string;
 }
 
 async function loadPlanetsData() {
@@ -27,12 +29,20 @@ async function loadPlanetsData() {
       planetaryRadius < 1.5 &&
       stellarMass > 0.78 &&
       stellarMass < 1.04 &&
-      stellarRadius > 0.99 && stellarRadius <1.01
+      stellarRadius > 0.99 &&
+      stellarRadius < 1.01
     );
   });
 
-  return planets;
+  return planets.map((planet) => {
+    return _.pick(planet, [
+      "koi_prad", "koi_smass", "koi_srad", "kepler_name", "koi_count"
+    ])
+  })
 }
 
 const newEarths = await loadPlanetsData();
+for (const planet of newEarths) {
+  console.log(planet);
+}
 console.log(`${newEarths.length} habitable planets found`);
